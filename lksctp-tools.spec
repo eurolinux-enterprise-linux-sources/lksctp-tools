@@ -1,7 +1,7 @@
 Summary: User-space access to Linux Kernel SCTP
 Name: lksctp-tools
 Version: 1.0.10
-Release: 5%{?dist}
+Release: 7%{?dist}
 # src/apps/bindx_test.C is GPLv2, I've asked upstream for clarification
 License: GPLv2 and GPLv2+ and LGPLv2 and BSD
 Group: System Environment/Libraries
@@ -9,8 +9,49 @@ URL: http://lksctp.sourceforge.net
 Source0: %{name}-%{version}.tar.gz
 Patch0: lksctp-tools-1.0.6-libdir.patch
 Patch1: lksctp-tools-1.0.10-test-crash.patch
+Patch2: 0001-api-Update-the-sctp.h-header-to-match-the-kernel.patch
+Patch3: 0002-lib-fix-make-distcheck-for-lksctp-tools.patch
+Patch4: 0003-tools-fix-parallel-build-warning.patch
+Patch5: 0004-apps-Fix-compiler-warnings-in-sctp_darn.patch
+Patch6: 0005-lib-Fix-compiler-warning-for-connectx.c.patch
+Patch7: 0006-func_test-fix-compiler-warnings-in-functional-tests.patch
+Patch8: 0008-lib-Support-non-blocking-sctp_connectx-calls.patch
+Patch9: 0009-lib-Fix-the-new-connectx-api-to-prefent-SEGFAULTS.patch
+Patch10: 0010-API-Add-SCTP_SACK_IMMEDIATELY-defintion.patch
+Patch11: 0011-api-SCTP_DELAYED_SACK-typo-fix.patch
+Patch12: 0012-api-Remove-the-old-obsolete-getaddrs-interfaces.patch
+Patch13: 0013-api-Remove-the-sctp-option-enumerator.patch
+Patch14: 0014-sctp_darn-add-inter-command-heartbeat-for-user-initi.patch
+Patch15: 0015-sctp_test-add-B-option-and-C-option-for-specifying-a.patch
+Patch16: 0016-sctp_test-add-O-option-for-specifying-live-time-of-m.patch
+Patch17: 0017-Implement-SCTP_GET_ASSOC_STATS.patch
+Patch18: 0018-sctp_send-fix-msg_control-data-corruption.patch
+Patch19: 0019-lksctp-tools-Update-sctp.h-with-info-for-DTLS.patch
+Patch20: 0022-test_fragments-increase-message-size-since-it-succee.patch
+Patch21: 0023-sctp_xconnect-memory-leak-when-malloc-big-buffer.patch
+Patch22: 0024-docs-update-current-maintainers-of-lksctp-tools.patch
+Patch23: 0025-apps-fix-format-string-warnings-due-to-size_t-usage.patch
+Patch24: 0026-apps-nagle-remove-unused-af_family-variable.patch
+Patch25: 0027-sctp_darn-remove-never-read-peer_prim_len-variable.patch
+Patch26: 0028-func_tests-drop-more-af_family-occurences.patch
+Patch27: 0029-test_1_to_1_sendmsg-remove-set-only-iov-variable-wit.patch
+Patch28: 0030-test_1_to_1_threads-fixup-pthread-init-and-exit.patch
+Patch29: 0031-test_1_to_1_addrs-remove-unused-socket-iov-and-mallo.patch
+Patch30: 0032-test_1_to_1_nonblock-remove-unused-iov-and-malloced-.patch
+Patch31: 0033-test_1_to_1_recv-minor-fix-compiler-warning.patch
+Patch32: 0035-test_autoclose-remove-unneeded-variable.patch
+Patch33: 0036-nagle_snd-remove-variable-with-assignment-only.patch
+Patch34: 0037-apps-peel-no-reason-to-keep-unused-assigned-only-var.patch
+Patch35: 0038-test_1_to_1_sockopt-fix-deprecated-SO_RCVBUF-SO_SNDB.patch
+Patch36: 0039-apps-sctp_darn-fix-format-string-warning-on-some-arc.patch
+Patch37: 0040-apps-func_tests-adapt-cflags-for-older-architectures.patch
+Patch38: 0041-sctp_darn-fix-__u64-format-string-issues-on-ppc64-x8.patch
+Patch39: 0047-test_1_to_1_threads-fixup-pthread-hung-by-giving-an-.patch
+Patch40: 0048-test_1_to_1_threads-remove-unused-variable-for-t_rec.patch
+Patch41: 0050-sctp-Add-new-spinfo-state-values-to-enumeration.patch
+Patch42: 0053-sctp_status-fix-printstatus-output.patch
 BuildRoot: %{_tmppath}/%{name}-%{version}-%{release}-root-%(%{__id_u} -n)
-BuildRequires: libtool, automake, autoconf
+BuildRequires: libtool, automake, autoconf, git
 Requires(post): /sbin/ldconfig
 Requires(postun): /sbin/ldconfig
 Conflicts: kernel < 2.6.10
@@ -49,6 +90,14 @@ Drafts).
 %setup -q
 %patch0 -p1
 %patch1 -p1
+# Create a git repo within the expanded tarball and let git do all the dirty work.
+git init
+git config user.email "dborkman@redhat.com"
+git config user.name "Daniel Borkmann"
+git add .
+git commit -a -q -m "%{version} baseline."
+# Apply all the patches on top of the release + patch0+1.
+git am -s `echo %{patches} | cut -d' ' -f3-`
 
 %build
 [ ! -x ./configure ] && sh bootstrap
@@ -95,6 +144,15 @@ rm -rf $RPM_BUILD_ROOT
 %doc doc/*.txt
 
 %changelog
+* Fri Jul 26 2013 Daniel Borkmann - 1.0.10-7
+- Fix build for Git rework
+
+* Fri Jul 26 2013 Daniel Borkmann - 1.0.10-6
+- Move spec system to apply patches via git-am(1), which makes it more
+  convienient for future backports
+- Backport SCTP_GET_ASSOC_STATS support (#908390) and import its dependencies
+- Fix bugs (#855379), (#953383), (#912557) and import its dependencies
+
 * Mon Feb 22 2010 Jan Safranek <jsafrane@redhat.com> - 1.0.10-5
 - Fixed the License of the package, it's BSD license, not MIT
 
