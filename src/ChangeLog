@@ -1,8 +1,34 @@
-Version 1.0.13 of the Developers' Release of the SCTP
+Version 1.0.17 of the Developers' Release of the SCTP
 Linux Kernel Implementation is available from
 
         http://www.kernel.org
 
+lksctp-1.0.17: Mon May  9 16:19 EDT 2016
+T:APP         Various sctp_test fixes
+T:TEST        also expect EACCES when accept on an established socket
+T:LIB         Make use of 'extern "C"'
+T:NA          Make use .git_ignore
+T:NA          Removed sysctl listing from man page
+T:BUILD       Added support for pkg-config
+T:BUILD       Allow not building tests
+
+lksctp-1.0.16: Tue Feb 18 11:01 EDT 2014
+T:APP         Code cleanups
+T:APP         Various sctp_status fixes
+T:TEST        Avoid using file descriptor 0 to get ENOTSOCK
+T:TEST        Various fixes
+T:LIB         Fix build for prefixed architectures
+
+lksctp-1.0.15: Sun May 12 11:01 EDT 2013
+T:BUILD       Allow build with no AM_SILENT_RULES support
+T:APP         Fix sctp_status
+T:APP         Fix quoted command line arguments
+
+lksctp-1.0.14: Wed Apr 05 11:54 EDT 2013
+T:BUILD       Modernize and fix autotool's build system
+T:TEST        Fix threading test
+T:TEST        Zero out flags in sendrecvmsg test
+T:HDR         Sync header with the kernel
 
 lksctp-1.0.13: Wed Jan 23 12:13 EDT 2013
 T:BUILD       Use silent rules

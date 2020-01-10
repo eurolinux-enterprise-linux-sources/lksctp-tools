@@ -42,14 +42,12 @@
  */
 
 #include <stdio.h>
-#include <errno.h> 
 #include <ctype.h>
 #include <string.h>
 #include <sys/types.h>
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <netinet/in.h> 
-#include <sys/errno.h>
 #include <errno.h>
 #include <malloc.h>
 #include <netinet/sctp.h>
@@ -114,7 +112,7 @@ test_print_message(int sk, struct msghdr *msg, size_t msg_len)
 		/* Make sure that everything is printable and that we
 		 * are NUL terminated...
 		 */
-		printf("DATA(%d):  ", msg_len);
+		printf("DATA(%lu):  ", msg_len);
 		while ( msg_len > 0 ) {
 			char *text;
 			int len;

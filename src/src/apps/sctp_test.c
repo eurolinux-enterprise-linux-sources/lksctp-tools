@@ -48,7 +48,6 @@
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <netinet/in.h>
-#include <sys/errno.h>
 #include <errno.h>
 #include <netinet/sctp.h>
 #include <string.h>
@@ -205,7 +204,7 @@ void usage(char *argv0)
 	fprintf(stderr, "  client:\n");
 	fprintf(stderr, "  %8s -H local-addr -P local-port -h remote-addr\n"
 		"\t      -p remote-port -s [-c case ] [-d level]\n"
-		"\t      [-x repeat] [-o order-pattern] ream-pattern]\n"
+		"\t      [-x repeat] [-o order-pattern] [-t stream-pattern]\n"
 		"\t      [-M max-stream] [-r rand-seed]\n"
 		"\t      [-m max-msgsize]\n"
 		"\t      [-L num-ports] [-S num-ports]\n"
@@ -552,7 +551,7 @@ append_addr(const char *parm, struct sockaddr *addrs, int *ret_count)
 	if (NULL != hst4) {
 		for (j = 0; j < i4; ++j) {
 			b4ap = (struct sockaddr_in *)aptr;
-			bzero(b4ap, sizeof(*b4ap));
+			memset(b4ap, 0x00, sizeof(*b4ap));
 			b4ap->sin_family = AF_INET;
 			b4ap->sin_port = htons(local_port);
 			bcopy(hst4->h_addr_list[j], &b4ap->sin_addr,
@@ -565,7 +564,7 @@ append_addr(const char *parm, struct sockaddr *addrs, int *ret_count)
 	if (NULL != hst6) {
 		for (j = 0; j < i6; ++j) {
 			b6ap = (struct sockaddr_in6 *)aptr;
-			bzero(b6ap, sizeof(*b6ap));
+			memset(b6ap, 0x00, sizeof(*b6ap));
 			b6ap->sin6_family = AF_INET6;
 			b6ap->sin6_port =  htons(local_port);
 			b6ap->sin6_scope_id = if_index;
@@ -722,7 +721,7 @@ int listen_r(int sk, int listen_count)
 		    sk, listen_count);
 
  	/* Mark sk as being able to accept new associations */
-        error = listen(sk, 1);
+        error = listen(sk, listen_count);
         if (error != 0) {
         	if (do_exit) {
                 	fprintf(stderr, "\n\n\t\t*** listen:  %s ***\n\n\n",
@@ -1671,12 +1670,13 @@ main(int argc, char *argv[])
 			case AF_INET:
 				t_addr = (struct sockaddr_in *)&s_rem;
 
-				t_addr->sin_family = AF_INET;
+				memcpy(t_addr, res->ai_addr,
+				       res->ai_addrlen);
+				t_addr->sin_family = res->ai_family;
 				t_addr->sin_port = htons(remote_port);
-				inet_pton(AF_INET, remote_host,
-					      &t_addr->sin_addr);
 
-				r_len = sizeof (struct sockaddr_in);
+				r_len = res->ai_addrlen;
+
 #ifdef __FreeBSD__
 				t_addr->sin_len = r_len;
 #endif
@@ -1685,15 +1685,15 @@ main(int argc, char *argv[])
 
 				t_addr6 = (struct sockaddr_in6 *)&s_rem;
 				
+				memcpy(t_addr6, res->ai_addr,
+				       res->ai_addrlen);
+				t_addr6->sin6_family = res->ai_family;
+				t_addr6->sin6_port = htons(remote_port);
 				if (interface)
 					t_addr6->sin6_scope_id =
 						if_nametoindex(interface);
-				t_addr6->sin6_family = AF_INET6;
-				t_addr6->sin6_port = htons(remote_port);
-				inet_pton(AF_INET6, remote_host,
-					      &t_addr6->sin6_addr);
 
-				r_len = sizeof (struct sockaddr_in6);
+				r_len = res->ai_addrlen;
 
 #ifdef __FreeBSD__
 				t_addr6->sin6_len = r_len;
@@ -1704,9 +1704,10 @@ main(int argc, char *argv[])
 		getnameinfo((struct sockaddr *)&s_rem, r_len, host_s,
 			    NI_MAXHOST, serv_s, NI_MAXSERV, NI_NUMERICHOST);
 			
-
 		DEBUG_PRINT(DEBUG_MAX, "remote:addr=%s, port=%s, family=%d\n",
 			    host_s, serv_s, res->ai_family);
+
+		freeaddrinfo(res);
         }
 
 	if (connectx_count != 0) {
@@ -1752,16 +1753,16 @@ main(int argc, char *argv[])
 			exit(1);
 		}
 
-			
 		switch (res->ai_family) {
 			case AF_INET:
 				t_addr = (struct sockaddr_in *)&s_loc;
-				t_addr->sin_family = AF_INET;
+				memcpy(t_addr, res->ai_addr,
+				       res->ai_addrlen);
+				t_addr->sin_family = res->ai_family;
 				t_addr->sin_port = htons(local_port);
-				inet_pton(AF_INET, local_host,
-					      &t_addr->sin_addr);
 
-				l_len = sizeof (struct sockaddr_in);
+				l_len = res->ai_addrlen;
+
 #ifdef __FreeBSD__
 				t_addr->sin_len = l_len;
 #endif
@@ -1769,16 +1770,15 @@ main(int argc, char *argv[])
 			case AF_INET6:
 				t_addr6 = (struct sockaddr_in6 *)&s_loc;
 
+				memcpy(t_addr6, res->ai_addr,
+				       res->ai_addrlen);
+				t_addr6->sin6_family = res->ai_family;
+				t_addr6->sin6_port = htons(local_port);
 				if (interface)
 					t_addr6->sin6_scope_id =
 						if_nametoindex(interface);
-				t_addr6->sin6_family = AF_INET6;
-				t_addr6->sin6_port = htons(local_port);
 
-				inet_pton(AF_INET6, local_host,
-					      &t_addr6->sin6_addr);
-
-				l_len = sizeof (struct sockaddr_in6);
+				l_len = res->ai_addrlen;
 
 #ifdef __FreeBSD__
 				t_addr6->sin6_len = l_len;
@@ -1794,6 +1794,8 @@ main(int argc, char *argv[])
 
 		DEBUG_PRINT(DEBUG_MAX, "local:addr=%s, port=%s, family=%d\n",
 			    host_s, serv_s, res->ai_family);
+
+		freeaddrinfo(res);
         }
 
 

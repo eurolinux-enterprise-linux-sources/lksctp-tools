@@ -1,13 +1,14 @@
 Summary: User-space access to Linux Kernel SCTP
 Name: lksctp-tools
-Version: 1.0.13
-Release: 3%{?dist}
+Version: 1.0.17
+Release: 2%{?dist}
 # src/apps/bindx_test.C is GPLv2, I've asked upstream for clarification
 License: GPLv2 and GPLv2+ and LGPLv2 and MIT
 Group: System Environment/Libraries
 URL: http://lksctp.sourceforge.net
 Source0:  http://downloads.sourceforge.net/lksctp/%{name}-%{version}.tar.gz
 Patch0: lksctp-tools-1.0.6-libdir.patch
+Patch1: lksctp-tools-1.0.17-sctp_status-fix-hostname-resolution.patch
 BuildRequires: libtool, automake, autoconf
 
 %description
@@ -43,6 +44,7 @@ Drafts).
 %prep
 %setup -q
 %patch0 -p1
+%patch1 -p1
 
 %build
 [ ! -x ./configure ] && sh bootstrap
@@ -77,6 +79,7 @@ find $RPM_BUILD_ROOT/%{_libdir}/ -name "*.la"  | xargs rm -f
 %{_includedir}/*
 %{_libdir}/libsctp.so
 %{_libdir}/lksctp-tools/libwithsctp.so
+%{_libdir}/pkgconfig/libsctp.pc
 %{_datadir}/lksctp-tools/
 %{_mandir}/man3/*
 
@@ -85,6 +88,16 @@ find $RPM_BUILD_ROOT/%{_libdir}/ -name "*.la"  | xargs rm -f
 %doc doc/*.txt
 
 %changelog
+* Mon Jun 27 2016 Marcelo Ricardo Leitner <mleitner@redhat.com> - 1.0.17-2
+- Added patch fixing issue with sctp_status and DNS with IPv6 addresses.
+  [1349497]
+
+* Tue May 10 2016 Marcelo Ricardo Leitner <mleitner@redhat.com> - 1.0.17-1
+- Update to 1.0.17
+
+* Wed Nov 18 2015 Marcelo Ricardo Leitner <mleitner@redhat.com> - 1.0.16-1
+- Update to 1.0.16
+
 * Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1.0.13-3
 - Mass rebuild 2014-01-24
 

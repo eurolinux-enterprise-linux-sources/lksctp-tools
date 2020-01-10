@@ -60,7 +60,6 @@
 #include <sys/socket.h>
 #include <sys/uio.h>
 #include <netinet/in.h>
-#include <sys/errno.h>
 #include <sys/param.h>
 #include <sys/poll.h>
 #include <arpa/inet.h>
@@ -1468,7 +1467,7 @@ append_addr(const char *parm, struct sockaddr *addrs, int *ret_count)
 	if (NULL != hst4) {
 		for (j = 0; j < i4; ++j) {
 			b4ap = (struct sockaddr_in *)aptr;
-			bzero(b4ap, sizeof(*b4ap));
+			memset(b4ap, 0x00, sizeof(*b4ap));
 			b4ap->sin_family = AF_INET;
 			b4ap->sin_port = htons(local_port);
 			bcopy(hst4->h_addr_list[j], &b4ap->sin_addr,
@@ -1481,7 +1480,7 @@ append_addr(const char *parm, struct sockaddr *addrs, int *ret_count)
 	if (NULL != hst6) {
 		for (j = 0; j < i6; ++j) {
 			b6ap = (struct sockaddr_in6 *)aptr;
-			bzero(b6ap, sizeof(*b6ap));
+			memset(b6ap, 0x00, sizeof(*b6ap));
 			b6ap->sin6_family = AF_INET6;
 			b6ap->sin6_port =  htons(local_port);
 			b6ap->sin6_scope_id = if_index;
@@ -2352,19 +2351,19 @@ test_verify_assoc_change(struct msghdr *msg)
 	switch(sn->sn_assoc_change.sac_state)
 	{
 	case SCTP_COMM_UP:
-		printf("Recieved SCTP_COMM_UP\n");
+		printf("Received SCTP_COMM_UP\n");
 		break;
 	case SCTP_COMM_LOST:
-		printf("Recieved SCTP_COMM_LOST\n");
+		printf("Received SCTP_COMM_LOST\n");
 		break;
 	case SCTP_RESTART:
-		printf("Recieved SCTP_RESTART\n");
+		printf("Received SCTP_RESTART\n");
 		break;
 	case SCTP_SHUTDOWN_COMP:
-		printf("Recieved SCTP_SHUTDOWN_COMP\n");
+		printf("Received SCTP_SHUTDOWN_COMP\n");
 		break;
 	case SCTP_CANT_STR_ASSOC:
-		printf("Recieved SCTP_CANT_STR_ASSOC\n");
+		printf("Received SCTP_CANT_STR_ASSOC\n");
 		break;
 	}
 
