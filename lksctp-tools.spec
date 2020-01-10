@@ -1,11 +1,11 @@
 Summary: User-space access to Linux Kernel SCTP
 Name: lksctp-tools
 Version: 1.0.13
-Release: 1%{?dist}
+Release: 3%{?dist}
 # src/apps/bindx_test.C is GPLv2, I've asked upstream for clarification
 License: GPLv2 and GPLv2+ and LGPLv2 and MIT
 Group: System Environment/Libraries
-URL: http://lksctp.org
+URL: http://lksctp.sourceforge.net
 Source0:  http://downloads.sourceforge.net/lksctp/%{name}-%{version}.tar.gz
 Patch0: lksctp-tools-1.0.6-libdir.patch
 BuildRequires: libtool, automake, autoconf
@@ -85,9 +85,17 @@ find $RPM_BUILD_ROOT/%{_libdir}/ -name "*.la"  | xargs rm -f
 %doc doc/*.txt
 
 %changelog
-* Wed Mar  6 2013 Daniel Borkmann <dborkman@redhat.com> 1.0.13-1
+* Fri Jan 24 2014 Daniel Mach <dmach@redhat.com> - 1.0.13-3
+- Mass rebuild 2014-01-24
+
+* Fri Dec 27 2013 Daniel Mach <dmach@redhat.com> - 1.0.13-2
+- Mass rebuild 2013-12-27
+
+* Fri Jan 25 2013 Daniel Borkmann <dborkman@redhat.com> - 1.0.13-1
 - Update to 1.0.13
-- Upstream URL is lksctp.org
+
+* Mon Jan 21 2013 Jan Safranek <jsafrane@redhat.com> - 1.0.12-1
+- Update to 1.0.12
 
 * Thu Jul 19 2012 Fedora Release Engineering <rel-eng@lists.fedoraproject.org> - 1.0.11-5
 - Rebuilt for https://fedoraproject.org/wiki/Fedora_18_Mass_Rebuild

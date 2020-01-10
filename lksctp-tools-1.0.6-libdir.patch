@@ -1,6 +1,6 @@
-diff -up lksctp-tools-1.0.13/src/withsctp/withsctp.in.orig lksctp-tools-1.0.13/src/withsctp/withsctp.in
---- lksctp-tools-1.0.13/src/withsctp/withsctp.in.orig	2009-10-24 02:49:15.000000000 +0200
-+++ lksctp-tools-1.0.13/src/withsctp/withsctp.in	2009-12-01 13:46:30.000000000 +0100
+diff -up lksctp-tools-1.0.11/src/withsctp/withsctp.in.orig lksctp-tools-1.0.11/src/withsctp/withsctp.in
+--- lksctp-tools-1.0.11/src/withsctp/withsctp.in.orig	2009-10-24 02:49:15.000000000 +0200
++++ lksctp-tools-1.0.11/src/withsctp/withsctp.in	2009-12-01 13:46:30.000000000 +0100
 @@ -1,6 +1,6 @@
  #!/bin/sh
  # -*- sh -*-
